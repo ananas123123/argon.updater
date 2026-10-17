@@ -78,8 +78,6 @@ if ($AppVersion -notmatch '^[0-9A-Za-z][0-9A-Za-z.+_-]*$') {
     throw "Invalid AppVersion '$AppVersion'. Use a simple version such as 0.1.0-test.1."
 }
 
-# Windows version-resource fields must be numeric. Keep the display version
-# separate from the four-part executable metadata version.
 $fileVersion = "0.1.0.0"
 if ($AppVersion -match '^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?') {
     $numericParts = @($Matches[1], $Matches[2], $Matches[3], $Matches[4])
@@ -103,8 +101,8 @@ if ($PayloadZip) {
 
 Write-Host "Preparing installer payload from $sourceDescription..."
 & $prepareScript @prepareArgs
-if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
-    throw "Payload preparation failed with exit code $LASTEXITCODE."
+if (-not $?) {
+    throw "Payload preparation failed. Review the diagnostics above."
 }
 
 if ($PrepareOnly) {
