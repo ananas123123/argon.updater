@@ -10,6 +10,7 @@ on:
       - "tools/**"
       - "docs/**"
       - "README.md"
+      - "build-installer.bat"
   pull_request:
     branches:
       - inno-installer
