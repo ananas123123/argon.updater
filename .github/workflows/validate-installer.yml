@@ -97,7 +97,7 @@ jobs:
 
             & (Join-Path $repo "tools\Prepare-Installer.ps1") -PayloadDirectory $bundleRoot -AppVersion "0.0.0-ci" -Force
 
-            $iscc = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)) "Inno Setup 6\ISCC.exe"
+            $iscc = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFilesX86)) "Inno Setup 6\ISCC.exe"
             if (-not (Test-Path -LiteralPath $iscc -PathType Leaf)) {
               throw "Inno Setup compiler was not found at the expected path: $iscc"
             }
