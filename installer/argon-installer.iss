@@ -150,7 +150,7 @@ begin
     Answer := MsgBox(
       'Keep your Argon settings, documents, search files, updates and logs?' +
       #13#10#13#10 +
-      'Choose Yes to preserve your data. Choose No to remove all data under ' +
+      'Choose Yes to preserve your data. Choose No to remove Argon's managed data folders under ' +
       '%LOCALAPPDATA%\Argon. Choose Cancel to stop uninstalling.',
       mbConfirmation, MB_YESNOCANCEL);
 
