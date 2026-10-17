@@ -1,0 +1,143 @@
+name: Validate installer source
+
+on:
+  push:
+    branches:
+      - inno-installer
+    paths:
+      - ".github/workflows/validate-installer.yml"
+      - "installer/**"
+      - "tools/**"
+      - "docs/**"
+      - "README.md"
+  pull_request:
+    branches:
+      - inno-installer
+    paths:
+      - ".github/workflows/validate-installer.yml"
+      - "installer/**"
+      - "tools/**"
+      - "docs/**"
+      - "README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-installer:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out installer source
+        uses: actions/checkout@v4
+
+      - name: Parse PowerShell scripts
+        shell: powershell
+        run: |
+          $parseFailures = @()
+          Get-ChildItem -Path .\tools -Filter *.ps1 -File | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors -and $errors.Count -gt 0) {
+              $parseFailures += "File: $($_.FullName)"
+              $parseFailures += $errors | ForEach-Object { "  Line $($_.Extent.StartLineNumber): $($_.Message)" }
+            }
+          }
+          if ($parseFailures.Count -gt 0) {
+            $parseFailures | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+          Write-Host "All PowerShell scripts parsed successfully."
+
+      - name: Install Inno Setup 6
+        shell: powershell
+        run: choco install innosetup --yes --no-progress
+
+      - name: Prepare fixture, compile installer, and verify manifest
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $repo = $env:GITHUB_WORKSPACE
+          $fixtureRoot = Join-Path $env:RUNNER_TEMP "argon-installer-fixture"
+          $bundleRoot = Join-Path $fixtureRoot "Argon-sim"
+          $appRoot = Join-Path $bundleRoot "App"
+          $installRoot = Join-Path $fixtureRoot "Installed"
+          $dataRoot = Join-Path $fixtureRoot "UserDataRoot"
+
+          try {
+            New-Item -ItemType Directory -Path $appRoot -Force | Out-Null
+
+            # These zero-byte executable/DLL names are compile-test fixtures only.
+            # They are never uploaded, released, or described as a runnable app.
+            $requiredFiles = @(
+              "Argon.exe",
+              "Qt6Core.dll",
+              "Qt6Gui.dll",
+              "Qt6Qml.dll",
+              "Qt6Quick.dll",
+              "Qt6QuickControls2.dll",
+              "Qt6Pdf.dll",
+              "Qt6PdfQuick.dll",
+              "platforms\qwindows.dll",
+              "libstdc++-6.dll",
+              "libgcc_s_seh-1.dll",
+              "libwinpthread-1.dll"
+            )
+            foreach ($relative in $requiredFiles) {
+              $path = Join-Path $appRoot $relative
+              New-Item -ItemType Directory -Path (Split-Path -Parent $path) -Force | Out-Null
+              New-Item -ItemType File -Path $path -Force | Out-Null
+            }
+
+            New-Item -ItemType Directory -Path (Join-Path $appRoot "qml\components") -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $appRoot "qml\components\fixture.txt") -Value "compile-only fixture"
+            New-Item -ItemType Directory -Path (Join-Path $bundleRoot "Updater") -Force | Out-Null
+            New-Item -ItemType Directory -Path (Join-Path $bundleRoot "Bootstrap") -Force | Out-Null
+
+            & (Join-Path $repo "tools\Prepare-Installer.ps1") -PayloadDirectory $bundleRoot -AppVersion "0.0.0-ci" -Force
+
+            $iscc = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)) "Inno Setup 6\ISCC.exe"
+            if (-not (Test-Path -LiteralPath $iscc -PathType Leaf)) {
+              throw "Inno Setup compiler was not found at the expected path: $iscc"
+            }
+
+            & $iscc "/DAppVersion=0.0.0-ci" "/DAppFileVersion=0.0.0.0" (Join-Path $repo "installer\argon-installer.iss")
+            if ($LASTEXITCODE -ne 0) {
+              throw "ISCC failed with exit code $LASTEXITCODE."
+            }
+
+            $installerPath = Join-Path $repo "dist\output\ArgonInstaller-0.0.0-ci-x64.exe"
+            if (-not (Test-Path -LiteralPath $installerPath -PathType Leaf)) {
+              throw "Inno Setup did not produce the expected compile-test installer: $installerPath"
+            }
+            Write-Host "Inno Setup compiled the fixture package. This generated EXE is NOT runnable Argon and is never published."
+
+            New-Item -ItemType Directory -Path $installRoot -Force | Out-Null
+            Get-ChildItem -LiteralPath (Join-Path $repo "dist\payload") -Force | Copy-Item -Destination $installRoot -Recurse -Force
+            Copy-Item -LiteralPath (Join-Path $repo "dist\payload-manifest.json") -Destination $installRoot -Force
+
+            $dataFolders = @(
+              "UserData\Settings",
+              "UserData\Cache",
+              "UserData\Search QR",
+              "UserData\Documents",
+              "UserData\Accounts",
+              "UserData\Analytics\Daily",
+              "Updates\Downloads",
+              "Updates\Staging",
+              "Updates\Backups",
+              "Logs"
+            )
+            foreach ($relative in $dataFolders) {
+              New-Item -ItemType Directory -Path (Join-Path $dataRoot $relative) -Force | Out-Null
+            }
+
+            & (Join-Path $repo "tools\Test-Installed-Argon.ps1") -InstallRoot $installRoot -DataRoot $dataRoot
+            Write-Host "Payload manifest verification passed."
+          }
+          finally {
+            if (Test-Path -LiteralPath $fixtureRoot) {
+              Remove-Item -LiteralPath $fixtureRoot -Recurse -Force -ErrorAction SilentlyContinue
+            }
+          }
