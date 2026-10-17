@@ -32,7 +32,7 @@ The manifest written during packaging records every payload file's relative path
 
 Prerequisites: Windows 10/11 x64, PowerShell 5.1 or newer, and Inno Setup 6.
 
-From the repository root:
+Double-click `build-installer.bat`, or run the PowerShell builder directly:
 
 ~~~powershell
 .\tools\Build-Installer.ps1
@@ -49,6 +49,12 @@ Use -ReleaseAssetName if a future release adopts a different asset filename. If 
 ## Smoke-test before publishing the first release
 
 The current app repository has build.bat, which deploys a runnable copy to the Windows Desktop Argon-sim folder. After running it successfully, prepare and compile the installer from that directory:
+
+~~~bat
+build-installer.bat -PayloadDirectory "%USERPROFILE%\Desktop\Argon-sim" -AppVersion "0.1.0-test.1"
+~~~
+
+Or run the PowerShell script directly:
 
 ~~~powershell
 .\tools\Build-Installer.ps1 -PayloadDirectory "$env:USERPROFILE\Desktop\Argon-sim" -AppVersion "0.1.0-test.1"
