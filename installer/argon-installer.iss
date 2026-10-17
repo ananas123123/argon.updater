@@ -1,6 +1,9 @@
 #ifndef AppVersion
   #define AppVersion "0.1.0-dev"
 #endif
+#ifndef AppFileVersion
+  #define AppFileVersion "0.1.0.0"
+#endif
 
 #define ProductName "Argon"
 #define PayloadDir "..\dist\payload"
@@ -37,8 +40,8 @@ SolidCompression=yes
 VersionInfoCompany=Argon
 VersionInfoDescription=Argon Windows Installer
 VersionInfoProductName=Argon
-VersionInfoProductVersion={#AppVersion}
-VersionInfoVersion=1.0.0.0
+VersionInfoProductVersion={#AppFileVersion}
+VersionInfoVersion={#AppFileVersion}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
