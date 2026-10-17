@@ -41,7 +41,7 @@ jobs:
             [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
             if ($errors -and $errors.Count -gt 0) {
               $parseFailures += "File: $($_.FullName)"
-              $parseFailures += $errors | ForEach-Object { "  Line $($_.Extent.StartLineNumber): $($_.Message)" }
+              $parseFailures += @($errors | ForEach-Object { "  Line $($_.Extent.StartLineNumber): $($_.Message)" })
             }
           }
           if ($parseFailures.Count -gt 0) {
@@ -97,6 +97,7 @@ jobs:
 
             & (Join-Path $repo "tools\Prepare-Installer.ps1") -PayloadDirectory $bundleRoot -AppVersion "0.0.0-ci" -Force
 
+            New-Item -ItemType Directory -Path (Join-Path $repo "dist\output") -Force | Out-Null
             $iscc = Join-Path ([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFilesX86)) "Inno Setup 6\ISCC.exe"
             if (-not (Test-Path -LiteralPath $iscc -PathType Leaf)) {
               throw "Inno Setup compiler was not found at the expected path: $iscc"
@@ -135,6 +136,16 @@ jobs:
 
             & (Join-Path $repo "tools\Test-Installed-Argon.ps1") -InstallRoot $installRoot -DataRoot $dataRoot
             Write-Host "Payload manifest verification passed."
+
+            # Exercise the release ZIP extraction path as well as local-folder staging.
+            $payloadZip = Join-Path $fixtureRoot "Argon-Windows-x64.zip"
+            Compress-Archive -Path (Join-Path $bundleRoot "*") -DestinationPath $payloadZip -Force
+            & (Join-Path $repo "tools\Prepare-Installer.ps1") -PayloadZip $payloadZip -AppVersion "0.0.0-ci-zip" -Force
+            $zipManifest = Get-Content -LiteralPath (Join-Path $repo "dist\payload-manifest.json") -Raw | ConvertFrom-Json
+            if ($zipManifest.appVersion -ne "0.0.0-ci-zip" -or -not ($zipManifest.files | Where-Object { $_.path -eq "App/Argon.exe" })) {
+              throw "ZIP payload staging did not produce the expected manifest entries."
+            }
+            Write-Host "Release ZIP extraction and manifest generation passed."
           }
           finally {
             if (Test-Path -LiteralPath $fixtureRoot) {
