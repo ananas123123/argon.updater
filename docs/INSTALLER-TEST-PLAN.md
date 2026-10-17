@@ -30,7 +30,7 @@ Run this plan against a disposable Windows 10/11 x64 account or a clean virtual 
 
 ## 4. Uninstallation and data retention
 - [ ] Uninstall and answer Yes to keep data. Confirm UserData, Updates and Logs are retained.
-- [ ] Reinstall and choose No to remove data. Confirm the per-user Argon data tree is removed.
+- [ ] Reinstall and choose No to remove data. Confirm the runtime-data subdirectories under %LOCALAPPDATA%\Argon are removed; the parent folder may remain empty during final cleanup.
 - [ ] Select Cancel at the data prompt. Uninstall should stop without removing application files.
 - [ ] Test silent uninstall with default options; data must be preserved.
 - [ ] Test silent complete removal using /REMOVEUSERDATA=1 only on a disposable account.
