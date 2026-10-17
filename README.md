@@ -76,7 +76,7 @@ Find ISCC.exe by installing Inno Setup 6 or supply its path:
 4. Confirm Argon launches, search and preview work, the Start Menu shortcut works, and %LOCALAPPDATA%\Argon\Logs\argon-runtime.log is created if runtime logging writes there.
 5. Open Settings → Apps → Installed apps (or the classic Programs and Features list) and confirm Argon can be uninstalled by the same user.
 6. Uninstall and choose to preserve the user data. Confirm %LOCALAPPDATA%\Argon\UserData remains.
-7. Reinstall, uninstall again, and explicitly choose removal of user data. Confirm that the runtime-data subdirectories under %LOCALAPPDATA%\Argon are removed; the parent folder can remain empty while Windows finishes uninstall cleanup.
+7. Reinstall, uninstall again, and explicitly choose removal of user data. Confirm that the known user-data, update, log and runtime subdirectories under %LOCALAPPDATA%\Argon are removed; the parent folder can remain empty while Windows finishes uninstall cleanup.
 8. Repeat installation with a custom application directory. The current Argon code resolves its writable runtime data root to %LOCALAPPDATA%\Argon unless ARGON_DATA_ROOT is set, so custom application location and runtime-data location are intentionally separate. The updater integration must account for the selected application path when updater binaries become available.
 9. Try silent install on a disposable test account or virtual machine:
 
