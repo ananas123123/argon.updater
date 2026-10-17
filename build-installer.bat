@@ -13,7 +13,7 @@ echo ==========================================
 echo.
 echo This builds an installer from an Argon release by default.
 echo For a local smoke test, pass your Argon-sim directory:
-echo build-installer.bat -PayloadDirectory "%%USERPROFILE%%\Desktop\Argon-sim" -AppVersion "0.1.0-test.1"
+echo build-installer.bat -PayloadDirectory "%USERPROFILE%\Desktop\Argon-sim" -AppVersion "0.1.0-test.1"
 echo.
 
 where powershell.exe >nul 2>&1
