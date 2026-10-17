@@ -96,7 +96,9 @@ try {
         -not (Test-Path -LiteralPath (Join-Path $stageApp $_) -PathType Leaf)
     })
     if ($missing.Count -gt 0) {
-        $missingLines = @("The Argon release is incomplete. Missing required deployed runtime file(s):") + @($missing | ForEach-Object { " - $_" }) + @("Build Argon with build.bat/windeployqt, or publish a complete Argon-Windows-x64.zip release asset.")
+        $missingLines = @("The Argon release is incomplete. Missing required deployed runtime file(s):") +
+            @($missing | ForEach-Object { " - $_" }) +
+            @("Build Argon with build.bat/windeployqt, or publish a complete Argon-Windows-x64.zip release asset.")
         throw ($missingLines -join [Environment]::NewLine)
     }
 
@@ -151,7 +153,10 @@ No executable is included in this build. This is intentional; do not rename or f
         files = $files
     }
     $manifestJson = $manifest | ConvertTo-Json -Depth 8
-    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    $manifestTemp = Join-Path $workingRoot "payload-manifest.json"
+    $verificationTemp = Join-Path $workingRoot "payload-verification.iss"
+    [IO.File]::WriteAllText($manifestTemp, $manifestJson + [Environment]::NewLine, $utf8NoBom)
 
     $codeLines = New-Object 'System.Collections.Generic.List[string]'
     $codeLines.Add("function GetPayloadFileCount: Integer;")
@@ -180,26 +185,47 @@ No executable is included in this build. This is intentional; do not rename or f
     }
     $codeLines.Add("  end;")
     $codeLines.Add("end;")
+    [IO.File]::WriteAllText($verificationTemp, ($codeLines -join [Environment]::NewLine) + [Environment]::NewLine, $utf8NoBom)
 
-    # Swap generated payload only after validating the new one. Retain the old payload if activation fails.
-    $backupPayload = Join-Path $distRoot (".payload-previous-" + [Guid]::NewGuid().ToString("N"))
-    if (Test-Path -LiteralPath $payloadRoot) {
-        Move-Item -LiteralPath $payloadRoot -Destination $backupPayload
-    }
+    # Swap payload, manifest and verification include as a unit. Restore the prior set if any activation fails.
+    $suffix = [Guid]::NewGuid().ToString("N")
+    $backupPayload = Join-Path $distRoot (".payload-previous-" + $suffix)
+    $backupManifest = Join-Path $distRoot (".manifest-previous-" + $suffix)
+    $backupVerification = Join-Path $distRoot (".verification-previous-" + $suffix)
+    $hadPayload = Test-Path -LiteralPath $payloadRoot
+    $hadManifest = Test-Path -LiteralPath $manifestPath
+    $hadVerification = Test-Path -LiteralPath $verificationPath
+
+    $newPayloadActivated = $false
+    $newManifestActivated = $false
+    $newVerificationActivated = $false
 
     try {
+        if ($hadPayload) { Move-Item -LiteralPath $payloadRoot -Destination $backupPayload }
+        if ($hadManifest) { Move-Item -LiteralPath $manifestPath -Destination $backupManifest }
+        if ($hadVerification) { Move-Item -LiteralPath $verificationPath -Destination $backupVerification }
+
         Move-Item -LiteralPath $stagePayload -Destination $payloadRoot
-        [IO.File]::WriteAllText($manifestPath, $manifestJson + [Environment]::NewLine, $utf8NoBom)
-        [IO.File]::WriteAllText($verificationPath, ($codeLines -join [Environment]::NewLine) + [Environment]::NewLine, $utf8NoBom)
+        $newPayloadActivated = $true
+        Move-Item -LiteralPath $manifestTemp -Destination $manifestPath
+        $newManifestActivated = $true
+        Move-Item -LiteralPath $verificationTemp -Destination $verificationPath
+        $newVerificationActivated = $true
     } catch {
-        if ((Test-Path -LiteralPath $backupPayload) -and -not (Test-Path -LiteralPath $payloadRoot)) {
-            Move-Item -LiteralPath $backupPayload -Destination $payloadRoot
-        }
+        if ($newPayloadActivated -and (Test-Path -LiteralPath $payloadRoot)) { Remove-Item -LiteralPath $payloadRoot -Recurse -Force -ErrorAction SilentlyContinue }
+        if ($newManifestActivated -and (Test-Path -LiteralPath $manifestPath)) { Remove-Item -LiteralPath $manifestPath -Force -ErrorAction SilentlyContinue }
+        if ($newVerificationActivated -and (Test-Path -LiteralPath $verificationPath)) { Remove-Item -LiteralPath $verificationPath -Force -ErrorAction SilentlyContinue }
+
+        if ($hadPayload -and (Test-Path -LiteralPath $backupPayload)) { Move-Item -LiteralPath $backupPayload -Destination $payloadRoot }
+        if ($hadManifest -and (Test-Path -LiteralPath $backupManifest)) { Move-Item -LiteralPath $backupManifest -Destination $manifestPath }
+        if ($hadVerification -and (Test-Path -LiteralPath $backupVerification)) { Move-Item -LiteralPath $backupVerification -Destination $verificationPath }
         throw
     }
 
-    if (Test-Path -LiteralPath $backupPayload) {
-        Remove-Item -LiteralPath $backupPayload -Recurse -Force
+    foreach ($backup in @($backupPayload, $backupManifest, $backupVerification)) {
+        if (Test-Path -LiteralPath $backup) {
+            Remove-Item -LiteralPath $backup -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
     Write-Host ""
