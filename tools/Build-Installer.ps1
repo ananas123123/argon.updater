@@ -180,8 +180,8 @@ if ($PrepareOnly) {
 
 if ([string]::IsNullOrWhiteSpace($ISCCPath)) {
     $candidates = @()
-    $programFilesX86 = [Environment]::GetFolderPath("ProgramFilesX86")
-    $programFiles = [Environment]::GetFolderPath("ProgramFiles")
+    $programFilesX86 = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)
+    $programFiles = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
     if ($programFilesX86) {
         $candidates += Join-Path $programFilesX86 "Inno Setup 6\ISCC.exe"
     }
