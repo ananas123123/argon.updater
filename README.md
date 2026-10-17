@@ -99,6 +99,7 @@ Use /DIR="D:\Apps\Argon" to select a custom install directory. Silent uninstall 
 - tools/Test-Installed-Argon.ps1: verifies an installed payload against its manifest and checks runtime folders.
 - Inno Setup build output: dist\output.
 - Runtime log: %LOCALAPPDATA%\Argon\Logs\argon-runtime.log.
+- Setup diagnostics: run the installer with `/LOG="%TEMP%\argon-setup.log"` to request an explicit Inno Setup log path. When double-clicked, `build-installer.bat` keeps the build console open on success or failure.
 
 ## Important limitations before public distribution
 
