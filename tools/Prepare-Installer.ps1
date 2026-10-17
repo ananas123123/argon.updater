@@ -52,6 +52,8 @@ function Find-AppDirectory([string]$Root) {
 }
 
 try {
+    New-Item -ItemType Directory -Path $workingRoot -Force | Out-Null
+
     if ($PayloadZip) {
         $resolvedZip = (Resolve-Path -LiteralPath $PayloadZip).Path
         $extractedRoot = Join-Path $workingRoot "extracted"
@@ -62,7 +64,6 @@ try {
         $inputRoot = (Resolve-Path -LiteralPath $PayloadDirectory).Path
     }
 
-    New-Item -ItemType Directory -Path $workingRoot -Force | Out-Null
     $appSource = Find-AppDirectory $inputRoot
     $appParent = Split-Path -Parent $appSource
     $bundleRoot = $appParent
