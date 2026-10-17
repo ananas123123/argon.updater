@@ -160,6 +160,23 @@ begin
   end;
 end;
 
+procedure RemoveDataSubdirectory(const DataRoot, RelativePath: String);
+var
+  FullPath: String;
+begin
+  FullPath := AddBackslash(DataRoot) + RelativePath;
+  if DirExists(FullPath) then
+  begin
+    Log('Removing user-requested Argon data directory: ' + FullPath);
+    if not DelTree(FullPath, True, True, True) then
+      MsgBox(
+        'Argon was uninstalled, but some data could not be removed:' +
+        #13#10 + FullPath + #13#10#13#10 +
+        'Close applications that may be using those files and remove them manually if desired.',
+        mbError, MB_OK);
+  end;
+end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   DataRoot: String;
@@ -167,13 +184,15 @@ begin
   if (CurUninstallStep = usPostUninstall) and RemoveArgonUserData then
   begin
     DataRoot := ExpandConstant('{localappdata}\Argon');
-    Log('User explicitly requested removal of Argon runtime data: ' + DataRoot);
+    Log('User explicitly requested removal of Argon runtime data under: ' + DataRoot);
 
-    if DirExists(DataRoot) and not DelTree(DataRoot, True, True, True) then
-      MsgBox(
-        'Argon was uninstalled, but some runtime data could not be removed:' +
-        #13#10 + DataRoot + #13#10#13#10 +
-        'Close applications that may be using those files and remove them manually if desired.',
-        mbError, MB_OK);
+    { Do not delete the root directory itself: on a default install it also
+      contains the running uninstaller until its final cleanup has completed. }
+    RemoveDataSubdirectory(DataRoot, 'UserData');
+    RemoveDataSubdirectory(DataRoot, 'Updates');
+    RemoveDataSubdirectory(DataRoot, 'Logs');
+    RemoveDataSubdirectory(DataRoot, 'App');
+    RemoveDataSubdirectory(DataRoot, 'Updater');
+    RemoveDataSubdirectory(DataRoot, 'Bootstrap');
   end;
 end;
