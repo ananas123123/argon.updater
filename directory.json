@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "product": "Argon",
+  "channel": "stable",
+  "metadataRevision": 1,
+  "updaterVersion": "1.0.0.0",
+  "minimumBootstrapVersion": "1.0.0.0",
+  "fileName": "ArgonUpdater.exe",
+  "packageUrl": "",
+  "sha256": "",
+  "sizeBytes": 0,
+  "releaseNotesUrl": "https://github.com/mnotion/argon.updater/releases",
+  "publishedAt": "",
+  "notes": "No updater executable has been published. Keep packageUrl, sha256, and sizeBytes unset until an actual release asset is available."
+}
