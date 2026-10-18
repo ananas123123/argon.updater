@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "product": "Argon",
   "channel": "stable",
-  "metadataRevision": 1,
+  "metadataRevision": 2,
   "updaterVersion": "1.0.0.0",
   "minimumBootstrapVersion": "1.0.0.0",
   "fileName": "ArgonUpdater.exe",
@@ -11,5 +11,5 @@
   "sizeBytes": 0,
   "releaseNotesUrl": "https://github.com/mnotion/argon.updater/releases",
   "publishedAt": "",
-  "notes": "No updater executable has been published. Keep packageUrl, sha256, and sizeBytes unset until an actual release asset is available."
+  "notes": "ArgonUpdater.exe v1.0.0.0 is currently built locally as an inert versioned placeholder. No downloadable updater package is published; keep packageUrl and sha256 empty and sizeBytes at 0 until a real release asset exists."
 }
