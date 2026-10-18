@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "product": "Argon",
   "channel": "stable",
-  "metadataRevision": 6,
+  "metadataRevision": 7,
   "bootstrapVersion": "1.0.0.0",
-  "updaterVersion": "1.0.0.1",
+  "updaterVersion": "1.0.0.0",
   "directoryUrl": "https://raw.githubusercontent.com/mnotion/argon.updater/rel-config/directory.json",
   "releaseNotesUrl": "https://github.com/mnotion/argon.updater/releases",
   "publishedAt": "2026-10-18T00:00:00Z",
-  "notes": "Stable Argon Updater target is v1.0.0.1. The executable is an inert, versioned placeholder for checking; a downloadable updater package has not been published, so no updater replacement can occur yet."
+  "notes": "Stable Argon Updater target is v1.0.0.0. The executable is an inert, versioned placeholder for checking; a downloadable updater package has not been published, so no updater replacement can occur yet."
 }
