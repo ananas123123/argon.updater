@@ -6,8 +6,8 @@
   "version": "0.1.3",
   "fileName": "Argon.exe",
   "packageUrl": "https://github.com/mnotion/argon.updater/releases/download/app-v0.1.3/Argon.exe",
-  "sha256": "37cc64e004c316ee77f5180a51dee30d865677fd7b497993e79d03ca618e633e",
-  "sizeBytes": 15701965,
+  "sha256": "20289cf5b512de64f956b9f91f752b5d82e41d74d87a936c156fff74b8c1bccc",
+  "sizeBytes": 16540297,
   "releaseNotesUrl": "",
-  "notes": "Argon 0.1.2 is published (as test)"
+  "notes": "Argon 0.1.3 is published (as test)"
 }
