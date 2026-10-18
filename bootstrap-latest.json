@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "product": "Argon",
   "channel": "stable",
-  "metadataRevision": 1,
-  "bootstrapVersion": "1.0.0.1",
+  "metadataRevision": 2,
+  "bootstrapVersion": "1.0.0.0",
   "updaterVersion": "1.0.0.0",
   "directoryUrl": "https://raw.githubusercontent.com/mnotion/argon.updater/rel-config/directory.json",
   "releaseNotesUrl": "https://github.com/mnotion/argon.updater/releases",
   "publishedAt": "2026-10-18T00:00:00Z",
-  "notes": "Bootstrap v1.0.0.1 metadata published. The updater package itself has not been published yet."
+  "notes": "Bootstrap v1.0.0.0 is the published stable version. The updater package itself has not been published yet."
 }
