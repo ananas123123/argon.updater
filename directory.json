@@ -6,8 +6,8 @@
   "version": "0.1.1",
   "fileName": "Argon.exe",
   "packageUrl": "https://github.com/mnotion/argon.updater/releases/download/app-v0.1.1/Argon.exe",
-  "sha256": "sha256:70d0127fe2948cbcf055b2e8f34ed2b2184eaab3a280ac2beef15182508e7ffc",
+  "sha256": "70d0127fe2948cbcf055b2e8f34ed2b2184eaab3a280ac2beef15182508e7ffc",
   "sizeBytes": 16239927,
   "releaseNotesUrl": "",
-  "notes": "Argon 0.1.1 is the target version. Download metadata remains unset until Argon.exe is uploaded to its app-v0.1.1 release; no executable download is configured yet."
+  "notes": "Argon 0.1.1 is published (as test)"
 }
