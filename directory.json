@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "product": "Argon",
+  "channel": "intermediate",
+  "targetBranch": "updater-intermediate",
+  "version": "0.1.0",
+  "fileName": "Argon.exe",
+  "packageUrl": "",
+  "sha256": "",
+  "sizeBytes": 0,
+  "releaseNotesUrl": "",
+  "notes": "No app-vX.X.X release asset is configured yet. After publishing a release, set version, packageUrl, sha256, and sizeBytes to its Argon.exe asset."
+}
