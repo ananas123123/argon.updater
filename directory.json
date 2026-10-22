@@ -3,11 +3,11 @@
   "product": "Argon",
   "channel": "intermediate",
   "targetBranch": "updater-intermediate",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "fileName": "Argon.exe",
   "packageUrl": "https://github.com/mnotion/argon.updater/releases/download/app-v0.1.4/Argon.exe",
-  "sha256": "a0609864b271e13936be130a7e08eeca5f9213c6f2c050cc3e4bc807f5c00a22",
-  "sizeBytes": 14489204,
+  "sha256": "f9a5e04843c139bb611e48f7f08639e81894444cdc583669d312f7806ec101ee",
+  "sizeBytes": 17600010,
   "releaseNotesUrl": "",
-  "notes": "Argon 0.1.4 is published"
+  "notes": "Argon 0.1.5 is published"
 }
