@@ -5,7 +5,7 @@
   "targetBranch": "updater-intermediate",
   "version": "0.1.5",
   "fileName": "Argon.exe",
-  "packageUrl": "https://github.com/mnotion/argon.updater/releases/download/app-v0.1.4/Argon.exe",
+  "packageUrl": "https://github.com/mnotion/argon.updater/releases/download/app-v0.1.5/Argon.exe",
   "sha256": "f9a5e04843c139bb611e48f7f08639e81894444cdc583669d312f7806ec101ee",
   "sizeBytes": 17600010,
   "releaseNotesUrl": "",
